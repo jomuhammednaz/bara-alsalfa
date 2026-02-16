@@ -23,6 +23,9 @@
       --dangerA:#FF4D6D;
       --dangerB:#FF9AA2;
 
+      --okA:#22C55E;
+      --okB:#4ADE80;
+
       --input: rgba(10, 14, 24, .55);
       --inputBorder: rgba(255,255,255,.14);
       --focus: rgba(74,198,255,.32);
@@ -114,6 +117,7 @@
       font-size: 14px;
       line-height: 1.8;
       margin: 8px 0 0;
+      text-align:right;
     }
 
     .row{
@@ -273,9 +277,6 @@
     }
     .choice:active{ transform: scale(.99); }
 
-    ul{ margin: 10px 0 0; padding: 0 18px; }
-    li{ margin: 6px 0; color: rgba(243,246,255,.88); }
-
     .min-note{
       flex-basis: 100%;
       width: 100%;
@@ -283,39 +284,49 @@
       margin-top: 6px;
     }
 
-    /* ✅ أيقونة كشف الجاسوس في شاشة التصويت */
-    .vote-title{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      justify-content:flex-end;
+    /* تخمين */
+    .word-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
     }
-    #spyRevealIcon{
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
+    .word-btn{
+      border-radius: 18px;
+      padding: 14px 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
       cursor:pointer;
+      text-align:right;
+      transition: transform .06s ease, filter .12s ease, border-color .12s ease;
       user-select:none;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.14);
-      transition: transform .06s ease, filter .12s ease;
-      font-size: 18px;
     }
-    #spyRevealIcon:hover{ filter: brightness(1.08); }
-    #spyRevealIcon:active{ transform: scale(.98); }
+    .word-btn:hover{ filter: brightness(1.06); border-color: rgba(74,198,255,.28); }
+    .word-btn:active{ transform: scale(.99); }
 
-    /* ✅ صندوق يظهر اسم الجاسوس عند الضغط */
-    #spyBox{
-      margin-top: 10px;
+    .word-btn.correct{
+      background: linear-gradient(135deg, rgba(34,197,94,.30), rgba(74,222,128,.14));
+      border-color: rgba(34,197,94,.55);
+    }
+    .word-btn.wrong{
+      background: linear-gradient(135deg, rgba(255,77,109,.30), rgba(255,154,162,.14));
+      border-color: rgba(255,77,109,.55);
+    }
+
+    .score-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    .score-item{
       padding: 12px 14px;
       border-radius: 16px;
-      background: linear-gradient(135deg, rgba(255,77,109,.16), rgba(109,94,247,.10));
-      border: 1px solid rgba(255,255,255,.14);
-      text-align: right;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      text-align:right;
     }
+    .score-item b{ font-size:16px; }
 
     @media (max-width:520px){
       #revealWordBtn{ width: 42px; height: 42px; }
@@ -337,10 +348,9 @@
 
     <!-- SETUP -->
     <section id="screen-setup" class="card">
-      <h2 style="margin:0 0 8px; text-align:right;">الإعدادات</h2>
-      <p class="muted" style="text-align:right;">
-        اكتب أسماء اللاعبين، اختر القسم، ثم ابدأ اللعبة. سيتم اختيار شخص واحد “برا السالفة” والكلمة تظهر للباقي.
-        بعدها يظهر ترتيب “مين يسأل مين”، ثم مرحلة التصويت لكل لاعب باسمه.
+      <h2 style="margin:0 0 8px;">الإعدادات</h2>
+      <p class="muted">
+        بعد التصويت سيظهر لِـ خارج السالفة 7 كلمات (واحدة صحيحة). سيتم حساب نقاط للجميع.
       </p>
 
       <div class="spacer"></div>
@@ -371,7 +381,7 @@
       <div class="hr"></div>
 
       <div>
-        <h3 style="margin:0; text-align:right;">اللاعبون</h3>
+        <h3 style="margin:0;">اللاعبون</h3>
         <div id="playersList"></div>
       </div>
 
@@ -386,7 +396,7 @@
     <!-- REVEAL -->
     <section id="screen-reveal" class="card hidden">
       <div class="row" style="justify-content: space-between; align-items:center;">
-        <h2 style="margin:0; text-align:right;">عرض الدور</h2>
+        <h2 style="margin:0;">عرض الدور</h2>
         <span class="badge" id="progressReveal"></span>
       </div>
 
@@ -396,7 +406,7 @@
 
       <div class="inner">
         <div class="center">
-          <div class="muted">مرّر الهاتف للاعب المكتوب اسمه فوق. ثم اضغط زر “عرض”.</div>
+          <div class="muted" style="text-align:center;">مرّر الهاتف للاعب المكتوب اسمه فوق. ثم اضغط زر “عرض”.</div>
           <div class="spacer"></div>
           <button class="primary btn-inline" id="showRoleBtn">عرض</button>
           <div class="spacer"></div>
@@ -409,10 +419,8 @@
 
     <!-- QUESTIONS -->
     <section id="screen-questions" class="card hidden">
-      <h2 style="margin:0; text-align:right;">🗣️ مين يسأل مين؟</h2>
-      <p class="muted" style="text-align:right;">
-        هذا ترتيب عشوائي. بإمكانكم تكرار جولة ثانية بنفس الترتيب أو اضغط “إعادة ترتيب” لتغييرها.
-      </p>
+      <h2 style="margin:0;">🗣️ مين يسأل مين؟</h2>
+      <p class="muted">هذا ترتيب عشوائي. بعده ابدأ التصويت.</p>
 
       <div class="hr"></div>
       <div id="pairsBox"></div>
@@ -427,27 +435,19 @@
     <!-- VOTING -->
     <section id="screen-vote" class="card hidden">
       <div class="row" style="justify-content: space-between; align-items:center;">
-        <!-- ✅ هنا أضفنا الأيقونة بجانب كلمة التصويت -->
-        <div class="vote-title">
-          <h2 style="margin:0; text-align:right;">التصويت</h2>
-          <span id="spyRevealIcon" title="إظهار/إخفاء خارج السالفة">🕵️</span>
-        </div>
-
+        <h2 style="margin:0;">🗳️ التصويت</h2>
         <span class="badge" id="progressVote"></span>
       </div>
 
-      <!-- ✅ صندوق يظهر اسم الجاسوس عند الضغط -->
-      <div id="spyBox" class="hidden"></div>
-
       <div class="spacer"></div>
       <div class="center big" id="votePrompt"></div>
-      <div class="muted center">اختر شخص واحد فقط (لا يمكنك التصويت لنفسك).</div>
+      <div class="muted center" style="text-align:center;">اختر شخص واحد فقط (لا يمكنك التصويت لنفسك).</div>
 
       <div id="voteChoices" class="vote-grid"></div>
 
       <div class="hr"></div>
       <div class="center">
-        <div class="muted">آخر اختيار:</div>
+        <div class="muted" style="text-align:center;">آخر اختيار:</div>
         <div id="lastVote" class="big">—</div>
         <div class="spacer"></div>
         <button class="btn-inline hidden" id="nextVoterBtn">التالي</button>
@@ -456,17 +456,55 @@
 
     <!-- RESULTS -->
     <section id="screen-results" class="card hidden">
-      <h2 style="margin:0; text-align:right;">✅ النتائج</h2>
+      <h2 style="margin:0;">✅ النتائج</h2>
       <div class="spacer"></div>
       <div id="resultsBox"></div>
+
+      <div class="hr"></div>
+
+      <div class="row">
+        <button class="primary btn-inline" id="goGuessBtn">التالي: تخمين الكلمة (خارج السالفة)</button>
+        <button class="btn-inline" id="skipGuessBtn">تخطي التخمين</button>
+      </div>
+    </section>
+
+    <!-- GUESS -->
+    <section id="screen-guess" class="card hidden">
+      <h2 style="margin:0;">🧩 تخمين الكلمة</h2>
+      <div class="spacer"></div>
+
+      <div class="inner">
+        <div class="big" id="guessTitle" style="text-align:right;"></div>
+        <div class="muted" id="guessRule" style="margin-top:6px;"></div>
+
+        <div id="wordOptions" class="word-grid"></div>
+
+        <div class="hr"></div>
+        <!-- ✅ نخلي العنصر موجود لكن رح يبقى فاضي دائماً -->
+        <div class="big" id="guessResult" style="text-align:right;"></div>
+      </div>
+
+      <div class="hr"></div>
+      <button class="primary btn-inline" id="finalizeBtn">عرض النقاط</button>
+    </section>
+
+    <!-- SCORE -->
+    <section id="screen-score" class="card hidden">
+      <h2 style="margin:0;">🏆 النقاط</h2>
+      <div class="spacer"></div>
+
+      <div id="scoreSummary" class="inner"></div>
+
+      <div class="spacer"></div>
+      <div id="scoreList" class="score-grid"></div>
+
       <div class="hr"></div>
       <button class="primary btn-inline" id="playAgainBtn">العب مرة ثانية</button>
     </section>
-
   </div>
 
 <script>
-/* ----------------------- DATA (WORDS) ----------------------- */
+/* ----------------------- DATA ----------------------- */
 const data = {
   places: [
     "مطار","مدرسة","جامعة","مشفى","صيدلية","حديقة","شاطئ","مقهى","مطعم","فندق",
@@ -496,6 +534,7 @@ const data = {
 
 /* ----------------------- STATE ----------------------- */
 let players = [];
+let scores = {};
 let category = "places";
 let secretWord = "";
 let spyIndex = -1;
@@ -508,18 +547,23 @@ let voteIndex = 0;
 let votes = {};
 let votedBy = {};
 
+let majorityPick = null;
+let spyName = "";
+let spyNotCaught = false;
+let spyGuessCorrect = false;
+let guessLocked = false;
+let guessOptions = [];
+
 /* ----------------------- HELPERS ----------------------- */
 const $ = (id) => document.getElementById(id);
 
 function showScreen(screenId){
-  const screens = ["screen-setup","screen-reveal","screen-questions","screen-vote","screen-results"];
+  const screens = [
+    "screen-setup","screen-reveal","screen-questions","screen-vote",
+    "screen-results","screen-guess","screen-score"
+  ];
   screens.forEach(s => $(s).classList.add("hidden"));
   $(screenId).classList.remove("hidden");
-
-  // ✅ إذا خرجنا من شاشة التصويت نخفي صندوق الجاسوس
-  if(screenId !== "screen-vote"){
-    hideSpyBox();
-  }
 }
 
 function escapeHtml(str){
@@ -541,7 +585,7 @@ function renderPlayers(){
   const box = $("playersList");
   box.innerHTML = "";
   if(players.length === 0){
-    box.innerHTML = `<div class="muted" style="text-align:right;">لم تتم إضافة لاعبين بعد.</div>`;
+    box.innerHTML = `<div class="muted">لم تتم إضافة لاعبين بعد.</div>`;
     return;
   }
   players.forEach((name, idx) => {
@@ -556,7 +600,9 @@ function renderPlayers(){
 }
 
 window.removePlayer = function(idx){
+  const removed = players[idx];
   players.splice(idx,1);
+  if(removed && scores[removed] != null) delete scores[removed];
   renderPlayers();
 }
 
@@ -569,11 +615,17 @@ function pickSecret(){
   const words = data[category] || data.places;
   secretWord = words[Math.floor(Math.random()*words.length)];
   spyIndex = Math.floor(Math.random()*players.length);
+  spyName = players[spyIndex];
   hideSecretWordBox();
-  hideSpyBox();
 }
 
-/* ----------------------- 🎭 زر إظهار/إخفاء الكلمة ----------------------- */
+function ensureScores(){
+  players.forEach(p => {
+    if(scores[p] == null) scores[p] = 0;
+  });
+}
+
+/* 🎭 */
 $("revealWordBtn").addEventListener("click", () => {
   if(!secretWord){
     alert("ابدأ اللعبة أولاً 😄");
@@ -588,37 +640,17 @@ $("revealWordBtn").addEventListener("click", () => {
   }
 });
 
-/* ----------------------- 🕵️ زر إظهار/إخفاء خارج السالفة ----------------------- */
-function hideSpyBox(){
-  const b = $("spyBox");
-  b.classList.add("hidden");
-  b.textContent = "";
-}
-
-$("spyRevealIcon").addEventListener("click", () => {
-  if(spyIndex < 0 || !players.length){
-    alert("ابدأ اللعبة أولاً 😄");
-    return;
-  }
-  const b = $("spyBox");
-  if(b.classList.contains("hidden")){
-    const spyName = players[spyIndex];
-    b.innerHTML = `🕵️ <b>خارج السالفة هو:</b> ${escapeHtml(spyName)}`;
-    b.classList.remove("hidden");
-  } else {
-    hideSpyBox();
-  }
-});
-
-/* ----------------------- SETUP EVENTS ----------------------- */
+/* SETUP */
 $("addPlayerBtn").addEventListener("click", () => {
   const name = $("playerName").value.trim();
   if(!name) return;
+
   if(players.map(p => p.toLowerCase()).includes(name.toLowerCase())){
     alert("هذا الاسم موجود مسبقاً.");
     return;
   }
   players.push(name);
+  if(scores[name] == null) scores[name] = 0;
   $("playerName").value = "";
   renderPlayers();
 });
@@ -629,12 +661,13 @@ $("playerName").addEventListener("keydown", (e) => {
 
 $("resetBtn").addEventListener("click", () => {
   players = [];
+  scores = {};
   secretWord = "";
   spyIndex = -1;
   hideSecretWordBox();
-  hideSpyBox();
   renderPlayers();
   $("playerName").value = "";
+  showScreen("screen-setup");
 });
 
 $("startBtn").addEventListener("click", () => {
@@ -644,6 +677,8 @@ $("startBtn").addEventListener("click", () => {
     return;
   }
 
+  ensureScores();
+
   pickSecret();
   revealIndex = 0;
   revealShown = false;
@@ -652,13 +687,19 @@ $("startBtn").addEventListener("click", () => {
   votedBy = {};
   voteIndex = 0;
 
+  majorityPick = null;
+  spyNotCaught = false;
+  spyGuessCorrect = false;
+  guessLocked = false;
+  guessOptions = [];
+
   questionOrder = shuffle([...players.keys()]);
 
   updateRevealUI();
   showScreen("screen-reveal");
 });
 
-/* ----------------------- REVEAL PHASE ----------------------- */
+/* REVEAL */
 function updateRevealUI(){
   const name = players[revealIndex];
   $("revealTitle").innerHTML = `اللاعب: <b>${escapeHtml(name)}</b>`;
@@ -673,7 +714,7 @@ function updateRevealUI(){
 $("showRoleBtn").addEventListener("click", () => {
   if(revealShown) return;
   const isSpy = (revealIndex === spyIndex);
-  const roleText = isSpy ? "😈 أنت برا السالفة (الجاسوس)" : `✅ الكلمة هي: ${secretWord}`;
+  const roleText = isSpy ? "😈 أنت برا السالفة (خارج السالفة)" : `✅ الكلمة هي: ${secretWord}`;
   $("roleBox").textContent = roleText;
   $("roleBox").classList.remove("hidden");
   $("nextRevealBtn").classList.remove("hidden");
@@ -690,10 +731,10 @@ $("nextRevealBtn").addEventListener("click", () => {
   updateRevealUI();
 });
 
-/* ----------------------- QUESTION PAIRS ----------------------- */
+/* QUESTIONS */
 function renderPairs(){
   const n = questionOrder.length;
-  let html = `<div class="muted" style="text-align:right;">الترتيب:</div><ul>`;
+  let html = `<div class="muted">الترتيب:</div><ul>`;
   for(let i=0;i<n;i++){
     const asker = players[questionOrder[i]];
     const asked = players[questionOrder[(i+1)%n]];
@@ -714,7 +755,7 @@ $("startVoteBtn").addEventListener("click", () => {
   showScreen("screen-vote");
 });
 
-/* ----------------------- VOTING PHASE ----------------------- */
+/* VOTING */
 function updateVoteUI(){
   const voter = players[voteIndex];
   $("progressVote").textContent = `${voteIndex+1} / ${players.length}`;
@@ -756,6 +797,7 @@ $("nextVoterBtn").addEventListener("click", () => {
 
   voteIndex++;
   if(voteIndex >= players.length){
+    computeMajorityPick();
     renderResults();
     showScreen("screen-results");
     return;
@@ -763,21 +805,47 @@ $("nextVoterBtn").addEventListener("click", () => {
   updateVoteUI();
 });
 
-/* ----------------------- RESULTS ----------------------- */
+function computeMajorityPick(){
+  const counts = players.map(name => ({ name, count: votes[name] || 0 }))
+                        .sort((a,b) => b.count - a.count);
+
+  if(counts.length === 0) { majorityPick = null; return; }
+
+  const top = counts[0];
+  if(top.count === 0){ majorityPick = null; return; }
+
+  const tied = counts.filter(x => x.count === top.count);
+  if(tied.length > 1){ majorityPick = null; return; }
+
+  majorityPick = top.name;
+}
+
 function renderResults(){
   const sorted = players
     .map(name => ({ name, count: votes[name] || 0 }))
     .sort((a,b) => b.count - a.count);
 
-  const spyName = players[spyIndex];
+  spyName = players[spyIndex];
+
+  const isCaughtByMajority = (majorityPick === spyName);
+  spyNotCaught = !isCaughtByMajority;
+
+  let majorityText = "لا يوجد غالب (تعادل أو لا أصوات).";
+  if(majorityPick) majorityText = `الأغلب صوّت على: <b>${escapeHtml(majorityPick)}</b>`;
 
   let html = `
     <div class="inner">
-      <div class="big" style="text-align:right;">🕵️ خارج السالفة كان: <b>${escapeHtml(spyName)}</b></div>
-      <div class="big" style="text-align:right;">🔑 الكلمة كانت: <b>${escapeHtml(secretWord)}</b></div>
+      <div class="big">📌 ${majorityText}</div>
+
+      <!-- ✅ التعديل: عرض اسم خارج السالفة هنا -->
+      <div class="big">🕵️ خارج السالفة هوي: <b>${escapeHtml(spyName)}</b></div>
+
+      <div class="muted">بعدها سيخمن خارج السالفة الكلمة من 7 كلمات.</div>
     </div>
+
     <div class="spacer"></div>
-    <h3 style="margin:0 0 6px; text-align:right;">نتائج التصويت</h3>
+
+    <h3 style="margin:0 0 6px;">نتائج التصويت</h3>
     <ul>
   `;
 
@@ -786,28 +854,154 @@ function renderResults(){
   });
   html += `</ul>`;
 
-  const top = sorted[0];
-  const topCount = top.count;
-  const tied = sorted.filter(x => x.count === topCount).map(x => x.name);
-
   html += `<div class="hr"></div>`;
-  if(topCount === 0){
-    html += `<div class="big" style="text-align:right;">ما في أصوات 🤷‍♂️</div>`;
-  } else if(tied.length > 1){
-    html += `<div class="big" style="text-align:right;">تعادل بين: <b>${escapeHtml(tied.join(" ، "))}</b> بعدد ${topCount} صوت</div>`;
-  } else {
-    html += `<div class="big" style="text-align:right;">الأكثر أصواتاً: <b>${escapeHtml(top.name)}</b> (${top.count})</div>`;
-  }
+  html += `<div class="muted">ملاحظة: النقاط ستُحسب بعد التخمين.</div>`;
 
   $("resultsBox").innerHTML = html;
 }
 
+/* GUESS */
+$("goGuessBtn").addEventListener("click", () => {
+  buildGuessOptions();
+  renderGuessUI();
+  showScreen("screen-guess");
+});
+
+$("skipGuessBtn").addEventListener("click", () => {
+  spyGuessCorrect = false;
+  applyScoring();
+  renderScoreboard();
+  showScreen("screen-score");
+});
+
+function buildGuessOptions(){
+  const poolSame = (data[category] || []).filter(w => w !== secretWord);
+  let decoys = shuffle(poolSame).slice(0, 6);
+
+  if(decoys.length < 6){
+    const all = Object.values(data).flat().filter(w => w !== secretWord && !decoys.includes(w));
+    decoys = decoys.concat(shuffle(all).slice(0, 6 - decoys.length));
+  }
+
+  guessOptions = shuffle([secretWord, ...decoys]).slice(0, 7);
+  guessLocked = false;
+}
+
+function renderGuessUI(){
+  $("guessTitle").innerHTML = `مرّر الهاتف إلى <b>${escapeHtml(spyName)}</b> (خارج السالفة) ليخمن الكلمة.`;
+  $("guessRule").innerHTML =
+    `قوانين النقاط: <br>
+     - إذا الأغلب ما صوّت على خارج السالفة ➜ <b>+50</b> لِـ خارج السالفة <br>
+     - إذا خمن الكلمة صح ➜ <b>+50</b> لِـ خارج السالفة <br>
+     - إذا تم كشف خارج السالفة بالأغلب وما خمن الكلمة ➜ <b>+50</b> لكل اللاعبين الآخرين`;
+
+  // ✅ نخلي النص السفلي فاضي دائماً (حسب طلبك)
+  $("guessResult").textContent = "";
+
+  const box = $("wordOptions");
+  box.innerHTML = "";
+
+  guessOptions.forEach(w => {
+    const btn = document.createElement("button");
+    btn.className = "word-btn";
+    btn.type = "button";
+    btn.textContent = w;
+    btn.addEventListener("click", () => onGuessPick(w, btn));
+    box.appendChild(btn);
+  });
+}
+
+function onGuessPick(picked, btnEl){
+  if(guessLocked) return;
+  guessLocked = true;
+
+  spyGuessCorrect = (picked === secretWord);
+
+  const buttons = [...document.querySelectorAll(".word-btn")];
+  buttons.forEach(b => b.disabled = true);
+
+  // ✅ فقط تلوين بدون أي نص تحت
+  if(spyGuessCorrect){
+    btnEl.classList.add("correct");
+  }else{
+    btnEl.classList.add("wrong");
+    const correctBtn = buttons.find(b => b.textContent === secretWord);
+    if(correctBtn) correctBtn.classList.add("correct");
+  }
+
+  // ✅ ممنوع كتابة أي شيء تحت
+  $("guessResult").textContent = "";
+}
+
+$("finalizeBtn").addEventListener("click", () => {
+  if(!guessLocked){
+    spyGuessCorrect = false;
+  }
+  applyScoring();
+  renderScoreboard();
+  showScreen("screen-score");
+});
+
+/* SCORING */
+function applyScoring(){
+  ensureScores();
+  const isCaughtByMajority = (majorityPick === spyName);
+
+  // نقاط خارج السالفة
+  if(!isCaughtByMajority){
+    scores[spyName] += 50; // ما انكشف بالأغلب
+  }
+  if(spyGuessCorrect){
+    scores[spyName] += 50; // خمن صح
+  }
+
+  // ✅ نقاط باقي اللاعبين:
+  // إذا انكشف خارج السالفة بالأغلب وما خمن الكلمة => كل غيره +50
+  if(isCaughtByMajority && !spyGuessCorrect){
+    players.forEach(p => {
+      if(p !== spyName){
+        scores[p] += 50;
+      }
+    });
+  }
+}
+
+function renderScoreboard(){
+  const isCaughtByMajority = (majorityPick === spyName);
+
+  $("scoreSummary").innerHTML = `
+    <div class="big">خارج السالفة: <b>${escapeHtml(spyName)}</b></div>
+    <div class="muted">${isCaughtByMajority ? "✅ تم كشف خارج السالفة بالأغلب." : "😈 لم يتم كشف خارج السالفة بالأغلب."}</div>
+    <div class="muted">${spyGuessCorrect ? "✅ خمن الكلمة صح." : "❌ لم يخمن الكلمة."}</div>
+    <div class="hr"></div>
+    <div class="big">🔑 الكلمة كانت: <b>${escapeHtml(secretWord)}</b></div>
+  `;
+
+  const list = $("scoreList");
+  list.innerHTML = "";
+
+  const sorted = players
+    .map(p => ({ name: p, pts: scores[p] || 0 }))
+    .sort((a,b) => b.pts - a.pts);
+
+  sorted.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "score-item";
+    div.innerHTML = `<b>${escapeHtml(item.name)}</b><div class="muted">النقاط: ${item.pts}</div>`;
+    list.appendChild(div);
+  });
+}
+
+/* Play Again */
 $("playAgainBtn").addEventListener("click", () => {
   if(players.length < 3){
     showScreen("screen-setup");
     return;
   }
+
+  category = $("category").value;
   pickSecret();
+
   revealIndex = 0;
   revealShown = false;
 
@@ -815,12 +1009,19 @@ $("playAgainBtn").addEventListener("click", () => {
   votedBy = {};
   voteIndex = 0;
 
+  majorityPick = null;
+  spyNotCaught = false;
+  spyGuessCorrect = false;
+  guessLocked = false;
+  guessOptions = [];
+
   questionOrder = shuffle([...players.keys()]);
+
   updateRevealUI();
   showScreen("screen-reveal");
 });
 
-// initial render
+// init
 renderPlayers();
 </script>
 </body>
