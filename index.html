@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>لعبة برا السالفة</title>
+
+  <style>
+    :root{
+      --bgA:#070A12;
+      --bgB:#0B1227;
+      --glass: rgba(255,255,255,.06);
+      --glass2: rgba(255,255,255,.08);
+      --border: rgba(255,255,255,.12);
+      --text: #F3F6FF;
+      --muted: rgba(243,246,255,.72);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+
+      --primary: #6D5EF7;
+      --primary2:#4AC6FF;
+      --danger: #FF4D6D;
+      --ok: #22C55E;
+      --chip: rgba(255,255,255,.08);
+      --chipBorder: rgba(255,255,255,.12);
+      --input: rgba(10, 14, 24, .55);
+      --inputBorder: rgba(255,255,255,.14);
+      --focus: rgba(74,198,255,.32);
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Tahoma, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(109,94,247,.35), transparent 55%),
+        radial-gradient(1000px 520px at 85% 25%, rgba(74,198,255,.28), transparent 55%),
+        radial-gradient(900px 520px at 40% 100%, rgba(255,77,109,.14), transparent 55%),
+        linear-gradient(180deg, var(--bgA), var(--bgB));
+      display:flex;
+      justify-content:center;
+      padding: 26px 12px 50px;
+    }
+
+    .wrap{
+      width:min(980px, 100%);
+      position:relative;
+    }
+
+    /* شوية زخرفة خلفية */
+    .bg-blur{
+      position:absolute;
+      inset: -80px -40px auto -40px;
+      height: 220px;
+      filter: blur(50px);
+      opacity: .55;
+      pointer-events:none;
+      background: linear-gradient(90deg, rgba(109,94,247,.35), rgba(74,198,255,.26), rgba(255,77,109,.18));
+      border-radius: 999px;
+    }
+
+    .topbar{
+      display:flex;
+      flex-direction: row-reverse; /* ✅ يخلي العنوان+الإيموجي على اليمين */
+      align-items:center;
+      justify-content:flex-end;    /* ✅ تثبيت لليمين */
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    h1{
+      margin:0;
+      font-size: clamp(22px, 2.2vw, 30px);
+      letter-spacing: .2px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+
+    #revealWordBtn{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      background: linear-gradient(135deg, rgba(109,94,247,.35), rgba(74,198,255,.18));
+      border:1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      transition: transform .08s ease, filter .12s ease;
+      font-size: 22px;
+    }
+    #revealWordBtn:hover{ filter: brightness(1.08); }
+    #revealWordBtn:active{ transform: scale(.97); }
+
+    .card{
+      background: var(--glass);
+      border:1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 18px;
+    }
+
+    .muted{
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+      margin: 8px 0 0;
+    }
+
+    .row{
+      display:flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .col{
+      flex: 1;
+      min-width: 260px;
+    }
+
+    label{
+      display:inline-block;
+      font-size: 14px;
+      color: rgba(243,246,255,.86);
+      margin-bottom: 6px;
+    }
+
+    input, select, button{
+      font: inherit;
+      color: var(--text);
+      background: var(--input);
+      border: 1px solid var(--inputBorder);
+      border-radius: 16px;
+      padding: 11px 12px;
+      outline: none;
+      width: 100%;
+      transition: border-color .12s ease, box-shadow .12s ease, transform .06s ease, filter .12s ease;
+    }
+    select{ cursor:pointer; }
+    input::placeholder{ color: rgba(243,246,255,.45); }
+
+    input:focus, select:focus{
+      border-color: rgba(74,198,255,.55);
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    button{
+      cursor:pointer;
+      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+    }
+    button:hover{ filter: brightness(1.06); }
+    button:active{ transform: scale(.99); }
+
+    .btn-inline{
+      width: auto;
+      padding: 11px 14px;
+      white-space: nowrap;
+    }
+
+    .primary{
+      background: linear-gradient(135deg, rgba(109,94,247,.95), rgba(74,198,255,.78));
+      border-color: rgba(255,255,255,.18);
+      box-shadow: 0 14px 30px rgba(109,94,247,.22);
+    }
+    .danger{
+      background: linear-gradient(135deg, rgba(255,77,109,.95), rgba(255,140,140,.75));
+      border-color: rgba(255,255,255,.16);
+      box-shadow: 0 14px 30px rgba(255,77,109,.14);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(243,246,255,.9);
+      font-size: 13px;
+    }
+
+    .hr{
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+      margin: 14px 0;
+    }
+
+    .spacer{ height: 12px; }
+    .hidden{ display:none !important; }
+    .center{ text-align:center; }
+    .big{ font-size: 22px; line-height: 1.75; }
+
+    /* قائمة اللاعبين */
+    #playersList{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: var(--chip);
+      border:1px solid var(--chipBorder);
+    }
+    .pill .x{
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.12);
+      cursor:pointer;
+      user-select:none;
+      transition: transform .06s ease, filter .12s ease;
+    }
+    .pill .x:hover{ filter: brightness(1.08); }
+    .pill .x:active{ transform: scale(.98); }
+
+    /* صندوق إظهار الكلمة */
+    #secretWordBox{
+      margin: 10px 0 18px;
+      padding: 14px 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(34,197,94,.14), rgba(74,198,255,.10));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+    }
+
+    /* بطاقة داخلية */
+    .inner{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    /* خيارات التصويت */
+    .vote-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .choice{
+      padding: 14px 14px;
+      border-radius: 18px;
+      cursor:pointer;
+      user-select:none;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      transition: transform .06s ease, filter .12s ease, border-color .12s ease;
+    }
+    .choice:hover{
+      filter: brightness(1.06);
+      border-color: rgba(74,198,255,.28);
+    }
+    .choice:active{ transform: scale(.99); }
+
+    ul{ margin: 10px 0 0; padding: 0 18px; }
+    li{ margin: 6px 0; color: rgba(243,246,255,.88); }
+
+    /* تحسين للموبايل */
+    @media (max-width:520px){
+      #revealWordBtn{ width: 42px; height: 42px; }
+      .big{ font-size: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="bg-blur"></div>
+
+    <!-- ✅ العنوان والإيموجي صاروا على اليمين -->
+    <div class="topbar">
+      <h1>لعبة برا السالفة</h1>
+      <span id="revealWordBtn" title="إظهار/إخفاء الكلمة">🎭</span>
+    </div>
+
+    <!-- صندوق تظهر فيه الكلمة عند الضغط على 🎭 -->
+    <div id="secretWordBox" class="hidden big center"></div>
+
+    <!-- SETUP -->
+    <section id="screen-setup" class="card">
+      <h2 style="margin:0 0 8px;">الإعدادات</h2>
+      <p class="muted">
+        اكتب أسماء اللاعبين، اختر القسم، ثم ابدأ اللعبة. سيتم اختيار شخص واحد “برا السالفة” والكلمة تظهر للباقي.
+        بعدها يظهر ترتيب “مين يسأل مين”، ثم مرحلة التصويت لكل لاعب باسمه.
+      </p>
+
+      <div class="spacer"></div>
+
+      <div class="row">
+        <div class="col">
+          <label>القسم</label>
+          <select id="category">
+            <option value="places">قسم الجاسوس (أماكن كثيرة)</option>
+            <option value="syrianCharacters">لعبة الشخصيات السورية</option>
+            <option value="turkishSeries">قسم المسلسلات التركية</option>
+            <option value="syrianSeries">قسم المسلسلات السورية المعروفة</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label>إضافة اسم لاعب</label>
+          <div class="row">
+            <input id="playerName" placeholder="مثال: محمد" />
+            <button class="btn-inline" id="addPlayerBtn">إضافة</button>
+          </div>
+          <div class="muted">الحد الأدنى 3 لاعبين.</div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div>
+        <h3 style="margin:0;">اللاعبون</h3>
+        <div id="playersList"></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row">
+        <button class="primary btn-inline" id="startBtn">ابدأ اللعبة</button>
+        <button class="danger btn-inline" id="resetBtn">إعادة ضبط</button>
+      </div>
+    </section>
+
+    <!-- REVEAL -->
+    <section id="screen-reveal" class="card hidden">
+      <div class="row" style="justify-content: space-between;">
+        <h2 style="margin:0;">عرض الدور</h2>
+        <span class="badge" id="progressReveal"></span>
+      </div>
+
+      <div class="spacer"></div>
+      <div class="center big" id="revealTitle"></div>
+      <div class="spacer"></div>
+
+      <div class="inner">
+        <div class="center">
+          <div class="muted">مرّر الهاتف للاعب المكتوب اسمه فوق. ثم اضغط زر “عرض”.</div>
+          <div class="spacer"></div>
+          <button class="primary btn-inline" id="showRoleBtn">عرض</button>
+          <div class="spacer"></div>
+          <div id="roleBox" class="big hidden"></div>
+          <div class="spacer"></div>
+          <button class="btn-inline hidden" id="nextRevealBtn">التالي</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUESTIONS -->
+    <section id="screen-questions" class="card hidden">
+      <h2 style="margin:0;">🗣️ مين يسأل مين؟</h2>
+      <p class="muted">
+        هذا ترتيب عشوائي. بإمكانكم تكرار جولة ثانية بنفس الترتيب أو اضغط “إعادة ترتيب” لتغييرها.
+      </p>
+
+      <div class="hr"></div>
+      <div id="pairsBox"></div>
+
+      <div class="hr"></div>
+      <div class="row">
+        <button class="btn-inline" id="reshuffleBtn">إعادة ترتيب</button>
+        <button class="primary btn-inline" id="startVoteBtn">بدء التصويت</button>
+      </div>
+    </section>
+
+    <!-- VOTING -->
+    <section id="screen-vote" class="card hidden">
+      <div class="row" style="justify-content: space-between;">
+        <h2 style="margin:0;">🗳️ التصويت</h2>
+        <span class="badge" id="progressVote"></span>
+      </div>
+
+      <div class="spacer"></div>
+      <div class="center big" id="votePrompt"></div>
+      <div class="muted center">اختر شخص واحد فقط (لا يمكنك التصويت لنفسك).</div>
+
+      <div id="voteChoices" class="vote-grid"></div>
+
+      <div class="hr"></div>
+      <div class="center">
+        <div class="muted">آخر اختيار:</div>
+        <div id="lastVote" class="big">—</div>
+        <div class="spacer"></div>
+        <button class="btn-inline hidden" id="nextVoterBtn">التالي</button>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="screen-results" class="card hidden">
+      <h2 style="margin:0;">✅ النتائج</h2>
+      <div class="spacer"></div>
+      <div id="resultsBox"></div>
+      <div class="hr"></div>
+      <button class="primary btn-inline" id="playAgainBtn">العب مرة ثانية</button>
+    </section>
+
+  </div>
+
+<script>
+/* ----------------------- DATA (WORDS) ----------------------- */
+const data = {
+  places: [
+    "مطار","مدرسة","جامعة","مشفى","صيدلية","حديقة","شاطئ","مقهى","مطعم","فندق",
+    "مول","سوق شعبي","محطة باص","محطة مترو","ورشة سيارات","مكتبة","سينما","مسرح",
+    "ملعب","صالة رياضة","مركز شرطة","محكمة","بلدية","مخبز","فرن","محل حلويات",
+    "صالون حلاقة","محل ملابس","محل أحذية","سوبرماركت","مزرعة","ريف","غابة",
+    "جبل","نهر","بحيرة","سد","ميناء","قصر","متحف","معرض","كراج","شارع رئيسي",
+    "حي قديم","قهوة شعبية","كافيه","مسبح","منتجع","مخيم","مدخل مدينة","حدود",
+    "مكتب عقارات","شركة","بنك","ATM","جامعة خاصة","مدرسة ابتدائي","روضة","ساحة"
+  ],
+  syrianCharacters: [
+    "معتز","عصام","أبو شهاب","أبو عصام","النمس","أبو جودت","سمعو","بو بدر",
+    "فوزية","أم عصام","أبو حاتم","أبو محمود","أبو غالب","أبو النار","أبو طلال",
+    "أبو كلبشة","شادي","إبراهيم","خاطر","زهرية","سليم","جابر","وضاح","رازي"
+  ],
+  turkishSeries: [
+    "قيامة أرطغرل","المؤسس عثمان","الحفرة","العشق الممنوع","طائر الرفراف","اسمعني",
+    "حب أعمى","فاطمة","إيزيل","الحب لا يفهم الكلام","زهرة الثالوث",
+    "العائلة","الطبيب المعجزة","الانتقام","حب للإيجار"
+  ],
+  syrianSeries: [
+    "باب الحارة","ضيعة ضايعة","الخربة","كسر عضم","ندم","الهيبة","أهل الغرام",
+    "عناية مشددة","صبايا","الفصول الأربعة","غزلان في غابة الذئاب","أيام الدراسة",
+    "بقعة ضوء","تخت شرقي","الانتظار","زمن العار","روزنا","وردة شامية"
+  ]
+};
+
+/* ----------------------- STATE ----------------------- */
+let players = [];
+let category = "places";
+let secretWord = "";
+let spyIndex = -1;
+
+let revealIndex = 0;
+let revealShown = false;
+
+let questionOrder = [];
+let voteIndex = 0;
+let votes = {};
+let votedBy = {};
+
+/* ----------------------- HELPERS ----------------------- */
+const $ = (id) => document.getElementById(id);
+
+function showScreen(screenId){
+  const screens = ["screen-setup","screen-reveal","screen-questions","screen-vote","screen-results"];
+  screens.forEach(s => $(s).classList.add("hidden"));
+  $(screenId).classList.remove("hidden");
+}
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, (m) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderPlayers(){
+  const box = $("playersList");
+  box.innerHTML = "";
+  if(players.length === 0){
+    box.innerHTML = `<div class="muted">لم تتم إضافة لاعبين بعد.</div>`;
+    return;
+  }
+  players.forEach((name, idx) => {
+    const pill = document.createElement("div");
+    pill.className = "pill";
+    pill.innerHTML = `
+      <span>${escapeHtml(name)}</span>
+      <span class="x" title="حذف" onclick="removePlayer(${idx})">✖</span>
+    `;
+    box.appendChild(pill);
+  });
+}
+
+window.removePlayer = function(idx){
+  players.splice(idx,1);
+  renderPlayers();
+}
+
+function hideSecretWordBox(){
+  $("secretWordBox").classList.add("hidden");
+  $("secretWordBox").textContent = "";
+}
+
+function pickSecret(){
+  const words = data[category] || data.places;
+  secretWord = words[Math.floor(Math.random()*words.length)];
+  spyIndex = Math.floor(Math.random()*players.length);
+  hideSecretWordBox();
+}
+
+/* ----------------------- 🎭 زر إظهار/إخفاء الكلمة ----------------------- */
+$("revealWordBtn").addEventListener("click", () => {
+  if(!secretWord){
+    alert("ابدأ اللعبة أولاً 😄");
+    return;
+  }
+  const box = $("secretWordBox");
+  if(box.classList.contains("hidden")){
+    box.textContent = "🔑 الكلمة هي: " + secretWord;
+    box.classList.remove("hidden");
+  } else {
+    hideSecretWordBox();
+  }
+});
+
+/* ----------------------- SETUP EVENTS ----------------------- */
+$("addPlayerBtn").addEventListener("click", () => {
+  const name = $("playerName").value.trim();
+  if(!name) return;
+  if(players.map(p => p.toLowerCase()).includes(name.toLowerCase())){
+    alert("هذا الاسم موجود مسبقاً.");
+    return;
+  }
+  players.push(name);
+  $("playerName").value = "";
+  renderPlayers();
+});
+
+$("playerName").addEventListener("keydown", (e) => {
+  if(e.key === "Enter") $("addPlayerBtn").click();
+});
+
+$("resetBtn").addEventListener("click", () => {
+  players = [];
+  secretWord = "";
+  spyIndex = -1;
+  hideSecretWordBox();
+  renderPlayers();
+  $("playerName").value = "";
+});
+
+$("startBtn").addEventListener("click", () => {
+  category = $("category").value;
+  if(players.length < 3){
+    alert("لازم يكون في 3 لاعبين على الأقل.");
+    return;
+  }
+
+  pickSecret();
+  revealIndex = 0;
+  revealShown = false;
+
+  votes = {};
+  votedBy = {};
+  voteIndex = 0;
+
+  questionOrder = shuffle([...players.keys()]);
+
+  updateRevealUI();
+  showScreen("screen-reveal");
+});
+
+/* ----------------------- REVEAL PHASE ----------------------- */
+function updateRevealUI(){
+  const name = players[revealIndex];
+  $("revealTitle").innerHTML = `اللاعب: <b>${escapeHtml(name)}</b>`;
+  $("progressReveal").textContent = `${revealIndex+1} / ${players.length}`;
+
+  $("roleBox").classList.add("hidden");
+  $("roleBox").textContent = "";
+  $("nextRevealBtn").classList.add("hidden");
+  revealShown = false;
+}
+
+$("showRoleBtn").addEventListener("click", () => {
+  if(revealShown) return;
+  const isSpy = (revealIndex === spyIndex);
+  const roleText = isSpy ? "😈 أنت برا السالفة (الجاسوس)" : `✅ الكلمة هي: ${secretWord}`;
+  $("roleBox").textContent = roleText;
+  $("roleBox").classList.remove("hidden");
+  $("nextRevealBtn").classList.remove("hidden");
+  revealShown = true;
+});
+
+$("nextRevealBtn").addEventListener("click", () => {
+  revealIndex++;
+  if(revealIndex >= players.length){
+    renderPairs();
+    showScreen("screen-questions");
+    return;
+  }
+  updateRevealUI();
+});
+
+/* ----------------------- QUESTION PAIRS ----------------------- */
+function renderPairs(){
+  const n = questionOrder.length;
+  let html = `<div class="muted">الترتيب:</div><ul>`;
+  for(let i=0;i<n;i++){
+    const asker = players[questionOrder[i]];
+    const asked = players[questionOrder[(i+1)%n]];
+    html += `<li><b>${escapeHtml(asker)}</b> يسأل <b>${escapeHtml(asked)}</b></li>`;
+  }
+  html += `</ul>`;
+  $("pairsBox").innerHTML = html;
+}
+
+$("reshuffleBtn").addEventListener("click", () => {
+  questionOrder = shuffle(questionOrder);
+  renderPairs();
+});
+
+$("startVoteBtn").addEventListener("click", () => {
+  voteIndex = 0;
+  updateVoteUI();
+  showScreen("screen-vote");
+});
+
+/* ----------------------- VOTING PHASE ----------------------- */
+function updateVoteUI(){
+  const voter = players[voteIndex];
+  $("progressVote").textContent = `${voteIndex+1} / ${players.length}`;
+  $("votePrompt").innerHTML = `👤 <b>${escapeHtml(voter)}</b> صوّت على مين؟`;
+  $("lastVote").textContent = votedBy[voter] ? `صوّت على: ${votedBy[voter]}` : "—";
+  $("nextVoterBtn").classList.add("hidden");
+
+  const choices = players.filter(p => p !== voter);
+  const box = $("voteChoices");
+  box.innerHTML = "";
+
+  choices.forEach(target => {
+    const div = document.createElement("div");
+    div.className = "choice";
+    div.innerHTML = `تصويت لـ <b>${escapeHtml(target)}</b>`;
+    div.addEventListener("click", () => castVote(voter, target));
+    box.appendChild(div);
+  });
+}
+
+function castVote(voter, target){
+  if(votedBy[voter]){
+    const prev = votedBy[voter];
+    votes[prev] = (votes[prev] || 0) - 1;
+  }
+  votedBy[voter] = target;
+  votes[target] = (votes[target] || 0) + 1;
+
+  $("lastVote").textContent = `صوّت على: ${target}`;
+  $("nextVoterBtn").classList.remove("hidden");
+}
+
+$("nextVoterBtn").addEventListener("click", () => {
+  const voter = players[voteIndex];
+  if(!votedBy[voter]){
+    alert("لازم تختار شخص للتصويت أولاً.");
+    return;
+  }
+
+  voteIndex++;
+  if(voteIndex >= players.length){
+    renderResults();
+    showScreen("screen-results");
+    return;
+  }
+  updateVoteUI();
+});
+
+/* ----------------------- RESULTS ----------------------- */
+function renderResults(){
+  const sorted = players
+    .map(name => ({ name, count: votes[name] || 0 }))
+    .sort((a,b) => b.count - a.count);
+
+  const spyName = players[spyIndex];
+
+  let html = `
+    <div class="inner">
+      <div class="big">🕵️ خارج السالفة كان: <b>${escapeHtml(spyName)}</b></div>
+      <div class="big">🔑 الكلمة كانت: <b>${escapeHtml(secretWord)}</b></div>
+    </div>
+    <div class="spacer"></div>
+    <h3 style="margin:0 0 6px;">نتائج التصويت</h3>
+    <ul>
+  `;
+
+  sorted.forEach(r => {
+    html += `<li><b>${escapeHtml(r.name)}</b>: ${r.count} صوت</li>`;
+  });
+  html += `</ul>`;
+
+  const top = sorted[0];
+  const topCount = top.count;
+  const tied = sorted.filter(x => x.count === topCount).map(x => x.name);
+
+  html += `<div class="hr"></div>`;
+  if(topCount === 0){
+    html += `<div class="big">ما في أصوات 🤷‍♂️</div>`;
+  } else if(tied.length > 1){
+    html += `<div class="big">تعادل بين: <b>${escapeHtml(tied.join(" ، "))}</b> بعدد ${topCount} صوت</div>`;
+  } else {
+    html += `<div class="big">الأكثر أصواتاً: <b>${escapeHtml(top.name)}</b> (${top.count})</div>`;
+  }
+
+  $("resultsBox").innerHTML = html;
+}
+
+$("playAgainBtn").addEventListener("click", () => {
+  if(players.length < 3){
+    showScreen("screen-setup");
+    return;
+  }
+  pickSecret();
+  revealIndex = 0;
+  revealShown = false;
+
+  votes = {};
+  votedBy = {};
+  voteIndex = 0;
+
+  questionOrder = shuffle([...players.keys()]);
+  updateRevealUI();
+  showScreen("screen-reveal");
+});
+
+// initial render
+renderPlayers();
+</script>
+</body>
+</html>
