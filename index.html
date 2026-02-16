@@ -9,22 +9,26 @@
     :root{
       --bgA:#070A12;
       --bgB:#0B1227;
+
       --glass: rgba(255,255,255,.06);
-      --glass2: rgba(255,255,255,.08);
       --border: rgba(255,255,255,.12);
+
       --text: #F3F6FF;
       --muted: rgba(243,246,255,.72);
+
       --shadow: 0 18px 60px rgba(0,0,0,.45);
 
-      --primary: #6D5EF7;
-      --primary2:#4AC6FF;
-      --danger: #FF4D6D;
-      --ok: #22C55E;
-      --chip: rgba(255,255,255,.08);
-      --chipBorder: rgba(255,255,255,.12);
+      --primaryA:#6D5EF7;
+      --primaryB:#4AC6FF;
+      --dangerA:#FF4D6D;
+      --dangerB:#FF9AA2;
+
       --input: rgba(10, 14, 24, .55);
       --inputBorder: rgba(255,255,255,.14);
       --focus: rgba(74,198,255,.32);
+
+      --chip: rgba(255,255,255,.08);
+      --chipBorder: rgba(255,255,255,.12);
     }
 
     *{ box-sizing: border-box; }
@@ -48,7 +52,6 @@
       position:relative;
     }
 
-    /* شوية زخرفة خلفية */
     .bg-blur{
       position:absolute;
       inset: -80px -40px auto -40px;
@@ -62,9 +65,9 @@
 
     .topbar{
       display:flex;
-      flex-direction: row-reverse; /* ✅ يخلي العنوان+الإيموجي على اليمين */
+      flex-direction: row-reverse;
       align-items:center;
-      justify-content:flex-end;    /* ✅ تثبيت لليمين */
+      justify-content:flex-end;
       gap: 10px;
       margin-bottom: 14px;
     }
@@ -117,7 +120,7 @@
       display:flex;
       gap: 12px;
       flex-wrap: wrap;
-      align-items: center;
+      align-items: flex-start;
     }
     .col{
       flex: 1;
@@ -129,6 +132,8 @@
       font-size: 14px;
       color: rgba(243,246,255,.86);
       margin-bottom: 6px;
+      text-align:right;
+      width:100%;
     }
 
     input, select, button{
@@ -139,9 +144,9 @@
       border-radius: 16px;
       padding: 11px 12px;
       outline: none;
-      width: 100%;
       transition: border-color .12s ease, box-shadow .12s ease, transform .06s ease, filter .12s ease;
     }
+    input, select{ width:100%; }
     select{ cursor:pointer; }
     input::placeholder{ color: rgba(243,246,255,.45); }
 
@@ -153,12 +158,13 @@
     button{
       cursor:pointer;
       background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.14);
     }
     button:hover{ filter: brightness(1.06); }
     button:active{ transform: scale(.99); }
 
     .btn-inline{
-      width: auto;
+      width:auto;
       padding: 11px 14px;
       white-space: nowrap;
     }
@@ -169,7 +175,7 @@
       box-shadow: 0 14px 30px rgba(109,94,247,.22);
     }
     .danger{
-      background: linear-gradient(135deg, rgba(255,77,109,.95), rgba(255,140,140,.75));
+      background: linear-gradient(135deg, rgba(255,77,109,.95), rgba(255,154,162,.75));
       border-color: rgba(255,255,255,.16);
       box-shadow: 0 14px 30px rgba(255,77,109,.14);
     }
@@ -197,7 +203,23 @@
     .center{ text-align:center; }
     .big{ font-size: 22px; line-height: 1.75; }
 
-    /* قائمة اللاعبين */
+    #secretWordBox{
+      margin: 10px 0 18px;
+      padding: 14px 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(34,197,94,.14), rgba(74,198,255,.10));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+      text-align:right;
+    }
+
+    .inner{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
     #playersList{
       display:flex;
       flex-wrap: wrap;
@@ -229,25 +251,6 @@
     .pill .x:hover{ filter: brightness(1.08); }
     .pill .x:active{ transform: scale(.98); }
 
-    /* صندوق إظهار الكلمة */
-    #secretWordBox{
-      margin: 10px 0 18px;
-      padding: 14px 14px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(34,197,94,.14), rgba(74,198,255,.10));
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 18px 40px rgba(0,0,0,.25);
-    }
-
-    /* بطاقة داخلية */
-    .inner{
-      background: rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
-      padding: 16px;
-    }
-
-    /* خيارات التصويت */
     .vote-grid{
       display:grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -262,6 +265,7 @@
       background: rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.12);
       transition: transform .06s ease, filter .12s ease, border-color .12s ease;
+      text-align:right;
     }
     .choice:hover{
       filter: brightness(1.06);
@@ -272,7 +276,47 @@
     ul{ margin: 10px 0 0; padding: 0 18px; }
     li{ margin: 6px 0; color: rgba(243,246,255,.88); }
 
-    /* تحسين للموبايل */
+    .min-note{
+      flex-basis: 100%;
+      width: 100%;
+      text-align: right;
+      margin-top: 6px;
+    }
+
+    /* ✅ أيقونة كشف الجاسوس في شاشة التصويت */
+    .vote-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:flex-end;
+    }
+    #spyRevealIcon{
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      transition: transform .06s ease, filter .12s ease;
+      font-size: 18px;
+    }
+    #spyRevealIcon:hover{ filter: brightness(1.08); }
+    #spyRevealIcon:active{ transform: scale(.98); }
+
+    /* ✅ صندوق يظهر اسم الجاسوس عند الضغط */
+    #spyBox{
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,77,109,.16), rgba(109,94,247,.10));
+      border: 1px solid rgba(255,255,255,.14);
+      text-align: right;
+    }
+
     @media (max-width:520px){
       #revealWordBtn{ width: 42px; height: 42px; }
       .big{ font-size: 20px; }
@@ -284,20 +328,17 @@
   <div class="wrap">
     <div class="bg-blur"></div>
 
-    <!-- ✅ العنوان والإيموجي صاروا على اليمين -->
     <div class="topbar">
-      <h1>تم برمجة العبة بواسطة الاسطورة  محمد نظير كردي</h1>
       <h1>لعبة برا السالفة</h1>
       <span id="revealWordBtn" title="إظهار/إخفاء الكلمة">🎭</span>
     </div>
 
-    <!-- صندوق تظهر فيه الكلمة عند الضغط على 🎭 -->
-    <div id="secretWordBox" class="hidden big center"></div>
+    <div id="secretWordBox" class="hidden big"></div>
 
     <!-- SETUP -->
     <section id="screen-setup" class="card">
-      <h2 style="margin:0 0 8px;">الإعدادات</h2>
-      <p class="muted">
+      <h2 style="margin:0 0 8px; text-align:right;">الإعدادات</h2>
+      <p class="muted" style="text-align:right;">
         اكتب أسماء اللاعبين، اختر القسم، ثم ابدأ اللعبة. سيتم اختيار شخص واحد “برا السالفة” والكلمة تظهر للباقي.
         بعدها يظهر ترتيب “مين يسأل مين”، ثم مرحلة التصويت لكل لاعب باسمه.
       </p>
@@ -305,6 +346,17 @@
       <div class="spacer"></div>
 
       <div class="row">
+        <div class="col">
+          <label>إضافة اسم لاعب</label>
+
+          <div class="row" style="align-items:center;">
+            <input id="playerName" placeholder="مثال: محمد" />
+            <button class="btn-inline" id="addPlayerBtn">إضافة</button>
+
+            <div class="muted min-note">الحد الأدنى 3 لاعبين.</div>
+          </div>
+        </div>
+
         <div class="col">
           <label>القسم</label>
           <select id="category">
@@ -314,21 +366,12 @@
             <option value="syrianSeries">قسم المسلسلات السورية المعروفة</option>
           </select>
         </div>
-
-        <div class="col">
-          <label>إضافة اسم لاعب</label>
-          <div class="row">
-            <input id="playerName" placeholder="مثال: محمد" />
-            <button class="btn-inline" id="addPlayerBtn">إضافة</button>
-          </div>
-          <div class="muted">الحد الأدنى 3 لاعبين.</div>
-        </div>
       </div>
 
       <div class="hr"></div>
 
       <div>
-        <h3 style="margin:0;">اللاعبون</h3>
+        <h3 style="margin:0; text-align:right;">اللاعبون</h3>
         <div id="playersList"></div>
       </div>
 
@@ -342,8 +385,8 @@
 
     <!-- REVEAL -->
     <section id="screen-reveal" class="card hidden">
-      <div class="row" style="justify-content: space-between;">
-        <h2 style="margin:0;">عرض الدور</h2>
+      <div class="row" style="justify-content: space-between; align-items:center;">
+        <h2 style="margin:0; text-align:right;">عرض الدور</h2>
         <span class="badge" id="progressReveal"></span>
       </div>
 
@@ -366,8 +409,8 @@
 
     <!-- QUESTIONS -->
     <section id="screen-questions" class="card hidden">
-      <h2 style="margin:0;">🗣️ مين يسأل مين؟</h2>
-      <p class="muted">
+      <h2 style="margin:0; text-align:right;">🗣️ مين يسأل مين؟</h2>
+      <p class="muted" style="text-align:right;">
         هذا ترتيب عشوائي. بإمكانكم تكرار جولة ثانية بنفس الترتيب أو اضغط “إعادة ترتيب” لتغييرها.
       </p>
 
@@ -383,10 +426,18 @@
 
     <!-- VOTING -->
     <section id="screen-vote" class="card hidden">
-      <div class="row" style="justify-content: space-between;">
-        <h2 style="margin:0;">🗳️ التصويت</h2>
+      <div class="row" style="justify-content: space-between; align-items:center;">
+        <!-- ✅ هنا أضفنا الأيقونة بجانب كلمة التصويت -->
+        <div class="vote-title">
+          <h2 style="margin:0; text-align:right;">التصويت</h2>
+          <span id="spyRevealIcon" title="إظهار/إخفاء خارج السالفة">🕵️</span>
+        </div>
+
         <span class="badge" id="progressVote"></span>
       </div>
+
+      <!-- ✅ صندوق يظهر اسم الجاسوس عند الضغط -->
+      <div id="spyBox" class="hidden"></div>
 
       <div class="spacer"></div>
       <div class="center big" id="votePrompt"></div>
@@ -405,7 +456,7 @@
 
     <!-- RESULTS -->
     <section id="screen-results" class="card hidden">
-      <h2 style="margin:0;">✅ النتائج</h2>
+      <h2 style="margin:0; text-align:right;">✅ النتائج</h2>
       <div class="spacer"></div>
       <div id="resultsBox"></div>
       <div class="hr"></div>
@@ -464,6 +515,11 @@ function showScreen(screenId){
   const screens = ["screen-setup","screen-reveal","screen-questions","screen-vote","screen-results"];
   screens.forEach(s => $(s).classList.add("hidden"));
   $(screenId).classList.remove("hidden");
+
+  // ✅ إذا خرجنا من شاشة التصويت نخفي صندوق الجاسوس
+  if(screenId !== "screen-vote"){
+    hideSpyBox();
+  }
 }
 
 function escapeHtml(str){
@@ -485,7 +541,7 @@ function renderPlayers(){
   const box = $("playersList");
   box.innerHTML = "";
   if(players.length === 0){
-    box.innerHTML = `<div class="muted">لم تتم إضافة لاعبين بعد.</div>`;
+    box.innerHTML = `<div class="muted" style="text-align:right;">لم تتم إضافة لاعبين بعد.</div>`;
     return;
   }
   players.forEach((name, idx) => {
@@ -514,6 +570,7 @@ function pickSecret(){
   secretWord = words[Math.floor(Math.random()*words.length)];
   spyIndex = Math.floor(Math.random()*players.length);
   hideSecretWordBox();
+  hideSpyBox();
 }
 
 /* ----------------------- 🎭 زر إظهار/إخفاء الكلمة ----------------------- */
@@ -528,6 +585,28 @@ $("revealWordBtn").addEventListener("click", () => {
     box.classList.remove("hidden");
   } else {
     hideSecretWordBox();
+  }
+});
+
+/* ----------------------- 🕵️ زر إظهار/إخفاء خارج السالفة ----------------------- */
+function hideSpyBox(){
+  const b = $("spyBox");
+  b.classList.add("hidden");
+  b.textContent = "";
+}
+
+$("spyRevealIcon").addEventListener("click", () => {
+  if(spyIndex < 0 || !players.length){
+    alert("ابدأ اللعبة أولاً 😄");
+    return;
+  }
+  const b = $("spyBox");
+  if(b.classList.contains("hidden")){
+    const spyName = players[spyIndex];
+    b.innerHTML = `🕵️ <b>خارج السالفة هو:</b> ${escapeHtml(spyName)}`;
+    b.classList.remove("hidden");
+  } else {
+    hideSpyBox();
   }
 });
 
@@ -553,6 +632,7 @@ $("resetBtn").addEventListener("click", () => {
   secretWord = "";
   spyIndex = -1;
   hideSecretWordBox();
+  hideSpyBox();
   renderPlayers();
   $("playerName").value = "";
 });
@@ -613,7 +693,7 @@ $("nextRevealBtn").addEventListener("click", () => {
 /* ----------------------- QUESTION PAIRS ----------------------- */
 function renderPairs(){
   const n = questionOrder.length;
-  let html = `<div class="muted">الترتيب:</div><ul>`;
+  let html = `<div class="muted" style="text-align:right;">الترتيب:</div><ul>`;
   for(let i=0;i<n;i++){
     const asker = players[questionOrder[i]];
     const asked = players[questionOrder[(i+1)%n]];
@@ -693,11 +773,11 @@ function renderResults(){
 
   let html = `
     <div class="inner">
-      <div class="big">🕵️ خارج السالفة كان: <b>${escapeHtml(spyName)}</b></div>
-      <div class="big">🔑 الكلمة كانت: <b>${escapeHtml(secretWord)}</b></div>
+      <div class="big" style="text-align:right;">🕵️ خارج السالفة كان: <b>${escapeHtml(spyName)}</b></div>
+      <div class="big" style="text-align:right;">🔑 الكلمة كانت: <b>${escapeHtml(secretWord)}</b></div>
     </div>
     <div class="spacer"></div>
-    <h3 style="margin:0 0 6px;">نتائج التصويت</h3>
+    <h3 style="margin:0 0 6px; text-align:right;">نتائج التصويت</h3>
     <ul>
   `;
 
@@ -712,11 +792,11 @@ function renderResults(){
 
   html += `<div class="hr"></div>`;
   if(topCount === 0){
-    html += `<div class="big">ما في أصوات 🤷‍♂️</div>`;
+    html += `<div class="big" style="text-align:right;">ما في أصوات 🤷‍♂️</div>`;
   } else if(tied.length > 1){
-    html += `<div class="big">تعادل بين: <b>${escapeHtml(tied.join(" ، "))}</b> بعدد ${topCount} صوت</div>`;
+    html += `<div class="big" style="text-align:right;">تعادل بين: <b>${escapeHtml(tied.join(" ، "))}</b> بعدد ${topCount} صوت</div>`;
   } else {
-    html += `<div class="big">الأكثر أصواتاً: <b>${escapeHtml(top.name)}</b> (${top.count})</div>`;
+    html += `<div class="big" style="text-align:right;">الأكثر أصواتاً: <b>${escapeHtml(top.name)}</b> (${top.count})</div>`;
   }
 
   $("resultsBox").innerHTML = html;
